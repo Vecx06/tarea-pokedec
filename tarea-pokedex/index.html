@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Pokedex</h1>
+    <input type="text" id="nombrePokemon" placeholder="Ingresa el nombre del Pokémon">
+    <button onclick="buscar()">¡Buscar!</button>
+    <div id="info"></div>
+
+    <script>
+        async function buscar() {
+            const nombre = document.getElementById("nombrePokemon").value.toLowerCase();
+            const contenedor = document.getElementById("info");
+
+            if (nombre === "") {
+                contenedor.innerHTML = "<p>Por favor, escribe el nombre de un Pokémon.</p>";
+                return;
+            }
+
+            try {
+                const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
+
+                if (!respuesta.ok) {
+                    throw new Error("Ese Pokémon no existe");
+                }
+
+                const datos = await respuesta.json();
+                contenedor.innerHTML = `
+                    <h2>${datos.name.toUpperCase()}</h2>
+                    <img src="${datos.sprites.front_default}" alt="Foto de ${datos.name}">
+                    <p><strong>Tipo:</strong> ${datos.types[0].type.name}</p>
+                `;
+
+            } catch (error) {
+                contenedor.innerHTML = `<p style="color: red;">Error: No se encontró al Pokémon.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
